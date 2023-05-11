@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.photo.mapper.PhotoMapper">
+    
+    <resultMap type="Photo" id="PhotoResult">
+        <result property="id"    column="id"    />
+        <result property="type"    column="type"    />
+        <result property="name"    column="name"    />
+        <result property="sourceUrl"    column="source_url"    />
+    </resultMap>
+
+    <sql id="selectPhotoVo">
+        select id, type, name, source_url from photo
+    </sql>
+
+    <select id="selectPhotoList" parameterType="Photo" resultMap="PhotoResult">
+        <include refid="selectPhotoVo"/>
+        <where>  
+            <if test="type != null "> and type = #{type}</if>
+            <if test="name != null  and name != ''"> and name like concat('%', #{name}, '%')</if>
+        </where>
+    </select>
+    
+    <select id="selectPhotoById" parameterType="Long" resultMap="PhotoResult">
+        <include refid="selectPhotoVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertPhoto" parameterType="Photo">
+        insert into photo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="type != null">type,</if>
+            <if test="name != null and name != ''">name,</if>
+            <if test="sourceUrl != null and sourceUrl != ''">source_url,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="type != null">#{type},</if>
+            <if test="name != null and name != ''">#{name},</if>
+            <if test="sourceUrl != null and sourceUrl != ''">#{sourceUrl},</if>
+         </trim>
+    </insert>
+
+    <update id="updatePhoto" parameterType="Photo">
+        update photo
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="type != null">type = #{type},</if>
+            <if test="name != null and name != ''">name = #{name},</if>
+            <if test="sourceUrl != null and sourceUrl != ''">source_url = #{sourceUrl},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deletePhotoById" parameterType="Long">
+        delete from photo where id = #{id}
+    </delete>
+
+    <delete id="deletePhotoByIds" parameterType="String">
+        delete from photo where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
